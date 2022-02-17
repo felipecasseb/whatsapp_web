@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +15,45 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _controllerSenha = TextEditingController();
 
   bool _cadastroUsuario = false;
+
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
+  _cadastrarUsuario() async{
+    String nome = _controllerNome.text;
+    String email = _controllerEmail.text;
+    String senha = _controllerSenha.text;
+
+    if(email.isNotEmpty && email.contains('@')){
+      if(senha.isNotEmpty && senha.length >=6){
+
+        //cadastro
+        if(_cadastroUsuario){
+          if(nome.isNotEmpty && nome.length>=2){
+            await _auth.createUserWithEmailAndPassword(
+                email: email,
+                password: senha
+            ).then((auth){
+
+              //upload da foto
+              String? idUsuario = auth.user?.uid;
+              print("Usuario cadastrado: $idUsuario");
+            });
+          }else{
+            print("Nome inválido");
+          }
+        }
+
+        //login
+         else{
+
+        }
+      }else{
+        print("Senha inválida");
+      }
+    }else{
+      print("Email Inválido");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           width: double.infinity,
                           child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                _cadastrarUsuario();
+                              },
                               style: ElevatedButton.styleFrom(
                                   primary: Color(0xFF075E54)),
                               child: Padding(
