@@ -45,7 +45,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
         //login
          else{
-
+           await _auth.signInWithEmailAndPassword(
+               email: email,
+               password: senha
+           ).then((auth){
+             String? idUsuario = auth.user?.email;
+             print("Usuario autenticado: $idUsuario");
+           });
         }
       }else{
         print("Senha inválida");
