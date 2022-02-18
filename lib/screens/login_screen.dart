@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
         .then((value){
 
           //tela principal
-
+          Navigator.pushReplacementNamed(context, "/home");
         });
       });
     }
@@ -109,8 +109,10 @@ class _LoginScreenState extends State<LoginScreen> {
                email: email,
                password: senha
            ).then((auth){
-             String? idUsuario = auth.user?.email;
-             print("Usuario autenticado: $idUsuario");
+             //String? idUsuario = auth.user?.email;
+             //print("Usuario autenticado: $idUsuario");
+             //tela principal
+             Navigator.pushReplacementNamed(context, "/home");
            });
         }
       }else{
