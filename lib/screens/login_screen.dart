@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:whatsapp_web/models/usuario.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseStorage _storage = FirebaseStorage.instance;
   Uint8List? _imagemSelecionada;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   _selecionarImagem() async {
 
@@ -36,15 +39,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
   }
 
-  _uploadImagem(String idUsuario){
+  _uploadImagem(Usuario usuario){
     Uint8List? arquivoSelecionado = _imagemSelecionada;
     if(arquivoSelecionado != null){
-      Reference imagemPerfilRef = _storage.ref("imagens/perfil/$idUsuario.jpg");
+      Reference imagemPerfilRef = _storage.ref("imagens/perfil/${usuario.idUsuario}.jpg");
       UploadTask uploadTask = imagemPerfilRef.putData(arquivoSelecionado);
 
       uploadTask.whenComplete(()async{
-        String linkImagem = await uploadTask.snapshot.ref.getDownloadURL();
-        print("Link imagem: $linkImagem");
+        String urlImagem = await uploadTask.snapshot.ref.getDownloadURL();
+        usuario.urlImagem = urlImagem;
+        print("Link imagem: $urlImagem");
+
+        final usuariosRef = _firestore.collection("usuarios");
+        usuariosRef.doc(usuario.idUsuario)
+        .set(usuario.toMap())
+        .then((value){
+
+          //tela principal
+
+        });
       });
     }
 
@@ -71,7 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 //upload da foto
                 String? idUsuario = auth.user?.uid;
                 if(idUsuario != null){
-                  _uploadImagem(idUsuario);
+                  Usuario usuario = Usuario(
+                      idUsuario,
+                      nome,
+                      email
+                  );
+                  _uploadImagem(usuario);
                 }
                 print("Usuario cadastrado: $idUsuario");
               });
