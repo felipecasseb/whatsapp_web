@@ -25,6 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Uint8List? _imagemSelecionada;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  _verificaUsuarioLogado()async{
+    User? usuarioLogado = await _auth.currentUser;
+
+    if(usuarioLogado != null){
+      Navigator.pushReplacementNamed(context, "/home");
+    }
+  }
+
   _selecionarImagem() async {
 
     //selecionar arquivo de imagem
@@ -121,6 +129,13 @@ class _LoginScreenState extends State<LoginScreen> {
     }else{
       print("Email Inválido");
     }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    _verificaUsuarioLogado();
   }
 
   @override
